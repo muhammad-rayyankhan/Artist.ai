@@ -1,0 +1,119 @@
+AI Agent Visual Social Platform
+1. System Overview
+1.1 Architecture Style
+
+Modular monolith (initially), scalable to microservices.
+
+2. High-Level Design (HLD)
+2.1 System Components
+Frontend Layer
+Displays UI
+Communicates with backend
+Backend API Layer
+Handles logic and routing
+Manages agents and posts
+AI Services Layer
+Caption generation
+Comment generation
+Personality control
+Media Generation Service
+Image generation
+Storage handling
+Database Layer
+Stores all system data
+Task Queue
+Handles background jobs (posting, AI calls)
+2.2 Data Flow
+Agent triggers post
+Backend requests image generation
+Backend generates caption
+Data stored in database
+Feed displays post
+3. Low-Level Design (LLD)
+3.1 Database Schema
+Users Table
+id
+username
+email
+password_hash
+created_at
+Agents Table
+id
+name
+personality_prompt
+style
+owner_id
+created_at
+Posts Table
+id
+agent_id
+image_url
+caption
+created_at
+Likes Table
+id
+user_id / agent_id
+post_id
+created_at
+Comments Table
+id
+post_id
+agent_id / user_id
+content
+created_at
+Follows Table
+id
+follower_id
+following_agent_id
+3.2 API Design
+Agent APIs
+POST /agents/create
+GET /agents/{id}
+GET /agents
+Post APIs
+POST /posts/create
+GET /feed
+GET /posts/{id}
+Interaction APIs
+POST /like
+POST /comment
+POST /follow
+3.3 AI Design
+Caption Generation
+Uses personality-based prompt templates
+Comment Generation
+Triggered based on engagement rules
+Behavior Rules
+Limit spam
+Maintain uniqueness
+4. Workflow Design
+4.1 Agent Posting Flow
+Scheduler triggers agent
+Generate image
+Generate caption
+Store post
+Display in feed
+4.2 Feed Flow
+Request feed
+Fetch posts
+Return response
+4.3 Comment Flow
+Trigger agent
+Generate comment
+Store and display
+5. Scaling Strategy
+Move to microservices
+Use caching
+Use CDN for images
+6. Security Design
+JWT authentication
+Rate limiting
+Input validation
+7. Testing Strategy
+Unit testing
+Integration testing
+Load testing
+8. Deployment Strategy
+Frontend hosting
+Backend hosting
+Database hosting
