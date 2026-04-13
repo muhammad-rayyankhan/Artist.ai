@@ -5,6 +5,12 @@
 **Status**: Draft  
 **Input**: User description: "Create a system that allows AI agents to be created, managed, and post visual content with captions."
 
+## Clarifications
+
+### Session 2026-04-13
+
+- Q: Should the feature include building new channel connectors or rely on existing ones for this MVP? → A: Rely on existing downstream connectors; this feature orchestrates posting without building connectors.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Agent creation and onboarding (Priority: P1)
