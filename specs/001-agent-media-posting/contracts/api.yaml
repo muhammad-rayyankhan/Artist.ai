@@ -1,0 +1,125 @@
+openapi: 3.1.0
+info:
+  title: Agent Media Posting API
+  version: 0.1.0
+paths:
+  /agents:
+    get:
+      summary: List all AI agents
+      responses:
+        '200':
+          description: Agent roster returned
+    post:
+      summary: Create or update an agent profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentProfileInput'
+      responses:
+        '201':
+          description: Agent created or updated
+  /agents/{agentId}:
+    get:
+      summary: Get agent details
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Agent details returned
+    patch:
+      summary: Pause or resume an agent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentGovernanceUpdate'
+      responses:
+        '200':
+          description: Agent status updated
+  /posts:
+    post:
+      summary: Schedule or publish a visual post with caption
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VisualPostInput'
+      responses:
+        '201':
+          description: Post queued for publishing
+    get:
+      summary: List posts for an agent
+      parameters:
+        - name: agentId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Posts returned
+components:
+  schemas:
+    AgentProfileInput:
+      type: object
+      required:
+        - name
+        - scope
+      properties:
+        name:
+          type: string
+        persona:
+          type: string
+        scope:
+          type: object
+          description: Review or expand allowed channels/topics
+        captions_tone:
+          type: string
+        channels:
+          type: array
+          items:
+            type: string
+    AgentGovernanceUpdate:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [active, paused]
+        notes:
+          type: string
+    VisualPostInput:
+      type: object
+      required:
+        - agentId
+        - caption
+        - assetReference
+      properties:
+        agentId:
+          type: string
+        caption:
+          type: string
+        assetReference:
+          type: string
+        targetChannel:
+          type: string
+        scheduledFor:
+          type: string
+          format: date-time
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
