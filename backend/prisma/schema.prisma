@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AgentProfile {
+  id            String    @id @default(uuid())
+  name          String
+  persona       String?
+  scope         Json?
+  captions_tone String?
+  status        AgentStatus @default(active)
+  created_by    String
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  posts      VisualPost[]
+  captions   CaptionGuidance[]
+  governance GovernanceAction[]
+
+  @@map("agent_profiles")
+}
+
+model VisualPost {
+  id              String   @id @default(uuid())
+  agent_id        String
+  caption         String   @db.Text
+  asset_reference String?
+  status          PostStatus @default(draft)
+  target_channel  String?
+  scheduled_for   DateTime?
+  created_at      DateTime @default(now())
+  published_at    DateTime?
+
+  agent AgentProfile @relation(fields: [agent_id], references: [id], onDelete: Cascade)
+
+  @@map("visual_posts")
+}
+
+model CaptionGuidance {
+  id                 String   @id @default(uuid())
+  agent_id          String
+  tone              String?
+  keywords          String[] // Stored as JSON array
+  structure_template String?  @db.Text
+
+  agent AgentProfile @relation(fields: [agent_id], references: [id], onDelete: Cascade)
+
+  @@map("caption_guidance")
+}
+
+model GovernanceAction {
+  id           String   @id @default(uuid())
+  agent_id     String
+  action       GovernanceActionType
+  performed_by String
+  notes        String?  @db.Text
+  created_at   DateTime @default(now())
+
+  agent AgentProfile @relation(fields: [agent_id], references: [id], onDelete: Cascade)
+
+  @@map("governance_actions")
+}
+
+enum AgentStatus {
+  active
+  paused
+  retired
+}
+
+enum PostStatus {
+  draft
+  scheduled
+  published
+  failed
+}
+
+enum GovernanceActionType {
+  create
+  update
+  pause
+  resume
+}
