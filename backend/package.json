@@ -1,0 +1,1 @@
+{"name": "backend", "version": "1.0.0", "description": "Agent Media Posting System Backend", "main": "dist/index.js", "scripts": {}, "keywords": [], "author": "", "license": "MIT"}
