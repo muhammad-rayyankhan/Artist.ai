@@ -1,1 +1,1 @@
-{"name": "backend", "version": "1.0.0", "description": "Agent Media Posting System Backend", "main": "dist/index.js", "scripts": {}, "keywords": [], "author": "", "license": "MIT"}
+{"name":"backend","version":"1.0.0","description":"Agent Media Posting System Backend","main":"dist/index.js","scripts":{},"keywords":[],"author":"","license":"MIT","devDependencies":{"@typescript-eslint/eslint-plugin":"^8.58.2","@typescript-eslint/parser":"^8.58.2","eslint":"^10.2.0","nodemon":"^3.1.14","prettier":"^3.8.3","ts-node":"^10.9.2"}}
