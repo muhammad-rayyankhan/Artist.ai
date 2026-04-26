@@ -61,60 +61,55 @@ router.post('/', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // PATCH /api/agents/:id - Update agent (including governance actions)
-router.patch('/:id', async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { status, performed_by, notes, ...updateData } = req.body;
+router.patch('/:id', asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status, performed_by, notes, ...updateData } = req.body;
 
-    // Check if agent exists
-    const existingAgent = await prisma.agentProfile.findUnique({
-      where: { id }
-    });
+  // Check if agent exists
+  const existingAgent = await prisma.agentProfile.findUnique({
+    where: { id }
+  });
 
-    if (!existingAgent) {
-      return res.status(404).json({ error: 'Agent not found' });
-    }
+  if (!existingAgent) {
+    throw new NotFoundError('Agent');
+  }
 
-    // If status is being changed, create a governance action
-    if (status && status !== existingAgent.status && performed_by) {
-      await prisma.governanceAction.create({
-        data: {
-          agent_id: id,
-          action: status === 'paused' ? 'pause' : 'resume',
-          performed_by,
-          notes
-        }
-      });
-
-      logger.auditGovernanceAction(
-        status === 'paused' ? 'pause' : 'resume',
-        performed_by,
-        id,
-        { previousStatus: existingAgent.status, newStatus: status, notes }
-      );
-    }
-
-    // Update the agent
-    const updatedAgent = await prisma.agentProfile.update({
-      where: { id },
+  // If status is being changed, create a governance action
+  if (status && status !== existingAgent.status && performed_by) {
+    await prisma.governanceAction.create({
       data: {
-        ...updateData,
-        ...(status && { status })
+        agent_id: id,
+        action: status === 'paused' ? 'pause' : 'resume',
+        performed_by,
+        notes
       }
     });
 
-    if (status && status !== existingAgent.status) {
-      logger.auditAgentOperation('status_change', id, performed_by || 'system', {
-        previousStatus: existingAgent.status,
-        newStatus: status
-      });
-    }
-
-    res.json(updatedAgent);
-  } catch (error) {
-    logger.error('Failed to update agent', { agentId: req.params.id, error: error.message });
-    res.status(500).json({ error: 'Failed to update agent' });
+    logger.auditGovernanceAction(
+      status === 'paused' ? 'pause' : 'resume',
+      performed_by,
+      id,
+      { previousStatus: existingAgent.status, newStatus: status, notes }
+    );
   }
-});
+
+  // Update the agent
+  const updatedAgent = await prisma.agentProfile.update({
+    where: { id },
+    data: {
+      ...updateData,
+      ...(status && { status })
+    }
+  });
+
+  if (status && status !== existingAgent.status) {
+    logger.auditAgentOperation('status_change', id, performed_by || 'system', {
+      previousStatus: existingAgent.status,
+      newStatus: status
+    });
+  }
+
+  res.json(updatedAgent);
+}));
 
 export default router;
