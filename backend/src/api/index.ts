@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import { logger } from '../lib/logging';
+import agentsRouter from './agents';
+import postsRouter from './posts';
+import governanceRouter from './governance';
 
 const router = Router();
 
@@ -9,9 +12,9 @@ const router = Router();
 // import governanceRouter from './governance';
 
 // Mount routes
-// router.use('/agents', agentsRouter);
-// router.use('/posts', postsRouter);
-// router.use('/governance', governanceRouter);
+router.use('/agents', agentsRouter);
+router.use('/posts', postsRouter);
+router.use('/governance', governanceRouter);
 
 // API health check
 router.get('/health', (req, res) => {
