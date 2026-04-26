@@ -37,33 +37,28 @@ router.get('/:id', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // POST /api/agents - Create new agent
-router.post('/', async (req: Request, res: Response) => {
-  try {
-    const { name, persona, scope, captions_tone, created_by } = req.body;
+router.post('/', asyncHandler(async (req: Request, res: Response) => {
+  const { name, persona, scope, captions_tone, created_by } = req.body;
 
-    // Basic validation
-    if (!name || !created_by) {
-      return res.status(400).json({ error: 'Name and created_by are required' });
-    }
-
-    const agent = await prisma.agentProfile.create({
-      data: {
-        name,
-        persona,
-        scope,
-        captions_tone,
-        created_by,
-        status: 'active'
-      }
-    });
-
-    logger.auditAgentOperation('create', agent.id, created_by, { name, persona });
-    res.status(201).json(agent);
-  } catch (error) {
-    logger.error('Failed to create agent', { error: error.message, body: req.body });
-    res.status(500).json({ error: 'Failed to create agent' });
+  // Basic validation
+  if (!name || !created_by) {
+    throw new ValidationError('Name and created_by are required');
   }
-});
+
+  const agent = await prisma.agentProfile.create({
+    data: {
+      name,
+      persona,
+      scope,
+      captions_tone,
+      created_by,
+      status: 'active'
+    }
+  });
+
+  logger.auditAgentOperation('create', agent.id, created_by, { name, persona });
+  res.status(201).json(agent);
+}));
 
 // PATCH /api/agents/:id - Update agent (including governance actions)
 router.patch('/:id', async (req: Request, res: Response) => {
