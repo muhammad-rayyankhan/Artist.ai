@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import { logger } from './lib/logging';
+import { errorHandler } from './lib/errors';
 import apiRouter from './api';
 
 // Load environment variables
