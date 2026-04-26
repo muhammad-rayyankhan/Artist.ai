@@ -29,10 +29,8 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// API routes will be registered here
-// app.use('/api/agents', agentsRouter);
-// app.use('/api/posts', postsRouter);
-// app.use('/api/governance', governanceRouter);
+// API routes
+app.use('/api', apiRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
