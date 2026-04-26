@@ -7,19 +7,14 @@ const router = Router();
 const prisma = new PrismaClient();
 
 // GET /api/agents - Get all agents
-router.get('/', async (req: Request, res: Response) => {
-  try {
-    const agents = await prisma.agentProfile.findMany({
-      orderBy: { created_at: 'desc' }
-    });
+router.get('/', asyncHandler(async (req: Request, res: Response) => {
+  const agents = await prisma.agentProfile.findMany({
+    orderBy: { created_at: 'desc' }
+  });
 
-    logger.info('Retrieved agent roster', { count: agents.length });
-    res.json(agents);
-  } catch (error) {
-    logger.error('Failed to retrieve agents', { error: error.message });
-    res.status(500).json({ error: 'Failed to retrieve agents' });
-  }
-});
+  logger.info('Retrieved agent roster', { count: agents.length });
+  res.json(agents);
+}));
 
 // GET /api/agents/:id - Get agent by ID
 router.get('/:id', async (req: Request, res: Response) => {
