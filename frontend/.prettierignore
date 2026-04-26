@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+build/
+coverage/
+*.log
+.env*
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+public/
