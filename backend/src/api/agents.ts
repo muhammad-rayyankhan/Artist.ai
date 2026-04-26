@@ -17,29 +17,24 @@ router.get('/', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // GET /api/agents/:id - Get agent by ID
-router.get('/:id', async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const agent = await prisma.agentProfile.findUnique({
-      where: { id },
-      include: {
-        posts: true,
-        captions: true,
-        governance: true
-      }
-    });
-
-    if (!agent) {
-      return res.status(404).json({ error: 'Agent not found' });
+router.get('/:id', asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const agent = await prisma.agentProfile.findUnique({
+    where: { id },
+    include: {
+      posts: true,
+      captions: true,
+      governance: true
     }
+  });
 
-    logger.info('Retrieved agent details', { agentId: id });
-    res.json(agent);
-  } catch (error) {
-    logger.error('Failed to retrieve agent', { agentId: req.params.id, error: error.message });
-    res.status(500).json({ error: 'Failed to retrieve agent' });
+  if (!agent) {
+    throw new NotFoundError('Agent');
   }
-});
+
+  logger.info('Retrieved agent details', { agentId: id });
+  res.json(agent);
+}));
 
 // POST /api/agents - Create new agent
 router.post('/', async (req: Request, res: Response) => {
