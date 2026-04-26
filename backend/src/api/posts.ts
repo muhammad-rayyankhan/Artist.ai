@@ -7,35 +7,30 @@ const router = Router();
 const prisma = new PrismaClient();
 
 // GET /api/posts - Get all posts
-router.get('/', async (req: Request, res: Response) => {
-  try {
-    const { agent_id, status } = req.query;
+router.get('/', asyncHandler(async (req: Request, res: Response) => {
+  const { agent_id, status } = req.query;
 
-    const where: any = {};
-    if (agent_id) where.agent_id = agent_id as string;
-    if (status) where.status = status as string;
+  const where: any = {};
+  if (agent_id) where.agent_id = agent_id as string;
+  if (status) where.status = status as string;
 
-    const posts = await prisma.visualPost.findMany({
-      where,
-      orderBy: { created_at: 'desc' },
-      include: {
-        agent: {
-          select: {
-            id: true,
-            name: true,
-            persona: true
-          }
+  const posts = await prisma.visualPost.findMany({
+    where,
+    orderBy: { created_at: 'desc' },
+    include: {
+      agent: {
+        select: {
+          id: true,
+          name: true,
+          persona: true
         }
       }
-    });
+    }
+  });
 
-    logger.info('Retrieved posts', { count: posts.length, filters: { agent_id, status } });
-    res.json(posts);
-  } catch (error) {
-    logger.error('Failed to retrieve posts', { error: error.message });
-    res.status(500).json({ error: 'Failed to retrieve posts' });
-  }
-});
+  logger.info('Retrieved posts', { count: posts.length, filters: { agent_id, status } });
+  res.json(posts);
+}));
 
 // GET /api/posts/:id - Get post by ID
 router.get('/:id', async (req: Request, res: Response) => {
