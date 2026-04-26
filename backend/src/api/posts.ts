@@ -57,52 +57,47 @@ router.get('/:id', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // POST /api/posts - Create new post
-router.post('/', async (req: Request, res: Response) => {
-  try {
-    const { agent_id, caption, asset_reference, target_channel, scheduled_for, created_by } = req.body;
+router.post('/', asyncHandler(async (req: Request, res: Response) => {
+  const { agent_id, caption, asset_reference, target_channel, scheduled_for, created_by } = req.body;
 
-    // Basic validation
-    if (!agent_id || !caption) {
-      return res.status(400).json({ error: 'agent_id and caption are required' });
-    }
-
-    // Validate caption length (max 4000 characters)
-    if (caption.length > 4000) {
-      return res.status(400).json({ error: 'Caption exceeds maximum length of 4000 characters' });
-    }
-
-    // Check if agent exists
-    const agent = await prisma.agentProfile.findUnique({
-      where: { id: agent_id }
-    });
-
-    if (!agent) {
-      return res.status(404).json({ error: 'Agent not found' });
-    }
-
-    const post = await prisma.visualPost.create({
-      data: {
-        agent_id,
-        caption,
-        asset_reference,
-        target_channel,
-        scheduled_for: scheduled_for ? new Date(scheduled_for) : null,
-        status: scheduled_for ? 'scheduled' : 'draft'
-      }
-    });
-
-    logger.auditPostOperation('create', post.id, agent_id, created_by || 'system', {
-      captionLength: caption.length,
-      target_channel,
-      scheduled_for
-    });
-
-    res.status(201).json(post);
-  } catch (error) {
-    logger.error('Failed to create post', { error: error.message, body: req.body });
-    res.status(500).json({ error: 'Failed to create post' });
+  // Basic validation
+  if (!agent_id || !caption) {
+    throw new ValidationError('agent_id and caption are required');
   }
-});
+
+  // Validate caption length (max 4000 characters)
+  if (caption.length > 4000) {
+    throw new ValidationError('Caption exceeds maximum length of 4000 characters');
+  }
+
+  // Check if agent exists
+  const agent = await prisma.agentProfile.findUnique({
+    where: { id: agent_id }
+  });
+
+  if (!agent) {
+    throw new NotFoundError('Agent');
+  }
+
+  const post = await prisma.visualPost.create({
+    data: {
+      agent_id,
+      caption,
+      asset_reference,
+      target_channel,
+      scheduled_for: scheduled_for ? new Date(scheduled_for) : null,
+      status: scheduled_for ? 'scheduled' : 'draft'
+    }
+  });
+
+  logger.auditPostOperation('create', post.id, agent_id, created_by || 'system', {
+    captionLength: caption.length,
+    target_channel,
+    scheduled_for
+  });
+
+  res.status(201).json(post);
+}));
 
 // PATCH /api/posts/:id - Update post status
 router.patch('/:id', async (req: Request, res: Response) => {
