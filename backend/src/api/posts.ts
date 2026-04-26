@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { logger } from '../lib/logging';
 import { PrismaClient } from '@prisma/client';
+import { asyncHandler, ValidationError, NotFoundError } from '../lib/errors';
 
 const router = Router();
 const prisma = new PrismaClient();
