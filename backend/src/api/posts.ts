@@ -33,33 +33,28 @@ router.get('/', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // GET /api/posts/:id - Get post by ID
-router.get('/:id', async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const post = await prisma.visualPost.findUnique({
-      where: { id },
-      include: {
-        agent: {
-          select: {
-            id: true,
-            name: true,
-            persona: true
-          }
+router.get('/:id', asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const post = await prisma.visualPost.findUnique({
+    where: { id },
+    include: {
+      agent: {
+        select: {
+          id: true,
+          name: true,
+          persona: true
         }
       }
-    });
-
-    if (!post) {
-      return res.status(404).json({ error: 'Post not found' });
     }
+  });
 
-    logger.info('Retrieved post details', { postId: id });
-    res.json(post);
-  } catch (error) {
-    logger.error('Failed to retrieve post', { postId: req.params.id, error: error.message });
-    res.status(500).json({ error: 'Failed to retrieve post' });
+  if (!post) {
+    throw new NotFoundError('Post');
   }
-});
+
+  logger.info('Retrieved post details', { postId: id });
+  res.json(post);
+}));
 
 // POST /api/posts - Create new post
 router.post('/', async (req: Request, res: Response) => {
