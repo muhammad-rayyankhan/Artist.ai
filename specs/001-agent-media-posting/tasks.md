@@ -43,10 +43,10 @@ description: "Task list for Agent Media Posting System implementation"
 
 - [X] T006 Setup PostgreSQL database connection and Prisma configuration in backend/prisma/schema.prisma
 - [X] T007 [P] Implement authentication/authorization framework in backend/src/lib/auth.ts
-- [ ] T008 [P] Setup API routing and middleware structure in backend/src/api/
+- [X] T008 [P] Setup API routing and middleware structure in backend/src/api/
 - [ ] T009 Create base database entities (Agent Profile, Visual Post, Caption Guidance, Governance Action) in backend/prisma/schema.prisma
 - [ ] T010 Configure error handling and logging infrastructure in backend/src/lib/logging.ts
-- [ ] T011 Setup environment configuration management (.env files) for both backend and frontend
+- [X] T011 Setup environment configuration management (.env files) for both backend and frontend
 - [ ] T012 [P] Create Prisma client and database migration scripts in backend/prisma/
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
