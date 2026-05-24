@@ -120,7 +120,6 @@ Thumbs.db
 *.swo
 
 # Prisma
-prisma/migrations/
 prisma/*.db
 prisma/*.db-journal
 
@@ -131,9 +130,6 @@ prisma/*.db-journal
 
 # Docker
 .dockerignore
-Dockerfile
-docker-compose.yml
-docker-compose.override.yml
 
 # Terraform
 .terraform/
